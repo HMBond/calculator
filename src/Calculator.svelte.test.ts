@@ -98,4 +98,28 @@ describe("Calculator basic behavior", () => {
     const got = parseFloat(getDisplay(container));
     expect(got).toBeCloseTo(0.75);
   });
+
+  it("Prevents leading zeros in input", async () => {
+    const { container } = render(App);
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, ["0", "0", "7"]);
+    expect(getDisplay(container)).toBe("7");
+  });
+
+  it("Backspace after C should not reveal temp", async () => {
+    const { container, getByText } = render(App);
+    // enter 12, press + to set temp=12
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, ["1", "2", "+"]);
+    // enter 3
+    await clickSequence(container, ["3"]);
+    expect(getDisplay(container)).toBe("3");
+    // press C (clears display to 0 but keeps temp)
+    const cbtn = getByRole(container, "button", { name: "C" });
+    await fireEvent.click(cbtn);
+    expect(getDisplay(container)).toBe("0");
+    // pressing backspace now should not reveal temp (should stay 0)
+    await clickSequence(container, ["←"]);
+    expect(getDisplay(container)).toBe("0");
+  });
 });

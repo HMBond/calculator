@@ -17,7 +17,13 @@
   }
 
   function backspace() {
+    if (lastInput === "" || lastInput === "0") {
+      // keep display at 0 instead of revealing temp
+      lastInput = "0";
+      return;
+    }
     lastInput = lastInput.substring(0, lastInput.length - 1);
+    if (lastInput === "") lastInput = "0";
   }
 
   function setOperator(fn: (a: number, b: number) => number) {
@@ -27,6 +33,12 @@
   }
 
   function digit(n: string) {
+    // prevent multiple leading zeros: if current is exactly "0"
+    if (lastInput === "0") {
+      if (n === "0") return; // ignore extra leading zeros
+      lastInput = n; // replace single leading zero with new digit
+      return;
+    }
     lastInput = lastInput === "" ? n : lastInput + n;
   }
 
