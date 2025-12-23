@@ -141,7 +141,6 @@
 </script>
 
 <main>
-  <h1>Calculator</h1>
   <span aria-label="display">{input}</span>
   <div>
     {#each buttons as button}
@@ -153,13 +152,17 @@
 <style>
   main {
     display: grid;
+    gap: 1rem;
   }
+
   span {
     text-align: right;
     padding: 1rem;
   }
+
   div {
     display: grid;
+    gap: 1rem;
     grid-template-columns: 100px 100px 100px 100px;
   }
 </style>
