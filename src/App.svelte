@@ -38,19 +38,19 @@
     {
       label: "7",
       action: () => {
-        lastInput = parseFloat(lastInput + "7").toString();
+        lastInput = lastInput === "" ? "7" : lastInput + "7";
       },
     },
     {
       label: "8",
       action: () => {
-        lastInput = parseFloat(lastInput + "8").toString();
+        lastInput = lastInput === "" ? "8" : lastInput + "8";
       },
     },
     {
       label: "9",
       action: () => {
-        lastInput = parseFloat(lastInput + "9").toString();
+        lastInput = lastInput === "" ? "9" : lastInput + "9";
       },
     },
     {
@@ -64,19 +64,19 @@
     {
       label: "4",
       action: () => {
-        lastInput = parseFloat(lastInput + "4").toString();
+        lastInput = lastInput === "" ? "4" : lastInput + "4";
       },
     },
     {
       label: "5",
       action: () => {
-        lastInput = parseFloat(lastInput + "5").toString();
+        lastInput = lastInput === "" ? "5" : lastInput + "5";
       },
     },
     {
       label: "6",
       action: () => {
-        lastInput = parseFloat(lastInput + "6").toString();
+        lastInput = lastInput === "" ? "6" : lastInput + "6";
       },
     },
     {
@@ -91,19 +91,19 @@
     {
       label: "1",
       action: () => {
-        lastInput = parseFloat(lastInput + "1").toString();
+        lastInput = lastInput === "" ? "1" : lastInput + "1";
       },
     },
     {
       label: "2",
       action: () => {
-        lastInput = parseFloat(lastInput + "2").toString();
+        lastInput = lastInput === "" ? "2" : lastInput + "2";
       },
     },
     {
       label: "3",
       action: () => {
-        lastInput = parseFloat(lastInput + "3").toString();
+        lastInput = lastInput === "" ? "3" : lastInput + "3";
       },
     },
     {
@@ -117,15 +117,15 @@
     {
       label: "0",
       action: () => {
-        lastInput = parseFloat(lastInput + "0").toString();
+        lastInput = lastInput === "" ? "0" : lastInput + "0";
       },
     },
     {
       label: ".",
       action: () => {
-        if (!input.includes(".")) {
+        if (!(lastInput || input).includes(".")) {
           if (lastInput === "") lastInput = "0.";
-          else lastInput = parseFloat(lastInput + ".").toString();
+          else lastInput = lastInput + ".";
         }
       },
     },
@@ -142,7 +142,7 @@
 
 <main>
   <h1>Calculator</h1>
-  <span>{input}</span>
+  <span aria-label="display">{input}</span>
   <div>
     {#each buttons as button}
       <button onclick={button.action}>{button.label}</button>

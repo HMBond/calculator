@@ -1,13 +1,15 @@
-import { page } from 'vitest/browser';
-import { describe, expect, it } from 'vitest';
-import { render } from 'vitest-browser-svelte';
-import App from './App.svelte';
+import { render, screen } from "@testing-library/svelte";
+import userEvent from "@testing-library/user-event";
+import { expect, test } from "vitest";
+import App from "./App.svelte";
 
-describe('App.svelte', () => {
-	it('should render h1', async () => {
-		render(App);
-		
-		const heading = page.getByRole('heading', { level: 1 });
-		await expect.element(heading).toBeInTheDocument();
-	});
+test("App", async () => {
+  const user = userEvent.setup();
+  render(App);
+
+  const button = screen.getByRole("button", { name: "1" });
+  const display = screen.getByLabelText("display");
+
+  await user.click(button);
+  expect(display.textContent).toBe("1");
 });

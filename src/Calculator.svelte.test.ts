@@ -1,15 +1,12 @@
-import { fireEvent, render } from "@testing-library/svelte";
-import { describe, expect, it } from "bun:test";
+import { fireEvent, getByRole, render } from "@testing-library/svelte";
+import { describe, expect, it } from "vitest";
 import App from "./App.svelte";
 
-function clickSequence(
-  getByText: (text: string) => HTMLElement,
-  labels: string[]
-) {
-  labels.forEach((l) => {
-    const btn = getByText(l);
+async function clickSequence(container: HTMLElement, labels: string[]) {
+  labels.forEach(async (l) => {
+    const btn = getByRole(container, "button", { name: l });
     if (!btn) throw new Error(`Button ${l} not found`);
-    fireEvent.click(btn);
+    await fireEvent.click(btn);
   });
 }
 
@@ -19,32 +16,33 @@ function getDisplay(container: HTMLElement) {
 }
 
 describe("Calculator basic behavior", () => {
+  const { container, getByText } = render(App);
   it("AC resets everything (temp -> 0 and display cleared)", async () => {
-    const { container, getByText } = render(App);
-    clickSequence(getByText, ["1", "2", "+", "3"]);
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, ["1", "2", "+", "3"]);
     expect(getDisplay(container)).toBe("3");
     await fireEvent.click(getByText("AC"));
     expect(getDisplay(container)).toBe("0");
   });
 
   it("C clears display but keeps temp value", async () => {
-    const { container, getByText } = render(App);
+    await clickSequence(container, ["AC"]);
     // enter 12, press + to store temp=12
-    clickSequence(getByText, ["1", "2", "+"]);
+    await clickSequence(container, ["1", "2", "+"]);
     // enter 3
-    clickSequence(getByText, ["3"]);
+    await clickSequence(container, ["3"]);
     expect(getDisplay(container)).toBe("3");
     await fireEvent.click(getByText("C"));
     // display should clear to 0 (implementation sets lastInput to "0")
     expect(getDisplay(container)).toBe("0");
     // now press = to apply operator (12 + 0)
-    clickSequence(getByText, ["="]);
+    await clickSequence(container, ["="]);
     expect(getDisplay(container)).toBe("12");
   });
 
   it("Backspace (←) removes last digit of current input", async () => {
-    const { container, getByText } = render(App);
-    clickSequence(getByText, ["1", "2", "3"]);
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, ["1", "2", "3"]);
     expect(getDisplay(container)).toBe("123");
     await fireEvent.click(getByText("←"));
     await fireEvent.click(getByText("←"));
@@ -52,34 +50,43 @@ describe("Calculator basic behavior", () => {
   });
 
   it("Performs basic arithmetic for + - * /", async () => {
-    const { container, getByText } = render(App);
+    await clickSequence(container, ["AC"]);
     // 8 * 7 = 56
-    clickSequence(getByText, ["8", "*", "7", "="]);
+    await clickSequence(container, ["8", "*", "7", "="]);
     expect(getDisplay(container)).toBe("56");
 
     // 9 / 3 = 3
-    clickSequence(getByText, ["AC"]);
-    clickSequence(getByText, ["9", "/", "3", "="]);
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, ["9", "/", "3", "="]);
     expect(getDisplay(container)).toBe("3");
 
     // 5 - 2 = 3
-    clickSequence(getByText, ["AC"]);
-    clickSequence(getByText, ["5", "-", "2", "="]);
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, ["5", "-", "2", "="]);
     expect(getDisplay(container)).toBe("3");
 
     // 4 + 4 = 8
-    clickSequence(getByText, ["AC"]);
-    clickSequence(getByText, ["4", "+", "4", "="]);
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, ["4", "+", "4", "="]);
     expect(getDisplay(container)).toBe("8");
   });
 
   it("Handles decimal arithmetic", async () => {
-    const { container, getByText } = render(App);
     // 0.5 + 0.25 = 0.75
-    clickSequence(getByText, ["AC"]);
-    clickSequence(getByText, ["0", ".", "5", "+", "0", ".", "2", "5", "="]);
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, [
+      "0",
+      ".",
+      "5",
+      "+",
+      "0",
+      ".",
+      "2",
+      "5",
+      "=",
+    ]);
     // Using toEqual with parseFloat to avoid string formatting differences
     const got = parseFloat(getDisplay(container));
-    expect(got).toBeCloseTo(0.75, 10);
+    expect(got).toBe(0.75);
   });
 });
