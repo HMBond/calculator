@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import App from "./App.svelte";
 
 async function clickSequence(container: HTMLElement, labels: string[]) {
-  labels.forEach(async (l) => {
+  for (const l of labels) {
     const btn = getByRole(container, "button", { name: l });
     if (!btn) throw new Error(`Button ${l} not found`);
     await fireEvent.click(btn);
-  });
+  }
 }
 
 function getDisplay(container: HTMLElement) {
@@ -87,14 +87,15 @@ describe("Calculator basic behavior", () => {
     ]);
     // Using toEqual with parseFloat to avoid string formatting differences
     let got = parseFloat(getDisplay(container));
-    expect(got).toBeCloseTo(0.75);
     // 0.5 + 0.25 = 0.75
+    expect(got).toBeCloseTo(0.75);
+  });
 
-    // now without pressing 0 before pressing the dot
+  it("Dot without leading zero works (isolated)", async () => {
+    const { container } = render(App);
     await clickSequence(container, ["AC"]);
     await clickSequence(container, [".", "5", "+", ".", "2", "5", "="]);
-    // Using toEqual with parseFloat to avoid string formatting differences
-    got = parseFloat(getDisplay(container));
+    const got = parseFloat(getDisplay(container));
     expect(got).toBeCloseTo(0.75);
   });
 });

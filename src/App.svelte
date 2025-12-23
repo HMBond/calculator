@@ -6,146 +6,78 @@
     parseFloat(lastInput)
   );
 
-  const buttons = [
-    {
-      label: "AC",
-      action: () => {
-        lastInput = "";
-        temp = 0;
-        operator = (a: number, b: number) => 0;
-      },
-    },
-    {
-      label: "C",
-      action: () => {
-        lastInput = "0";
-      },
-    },
-    {
-      label: "←",
-      action: () => {
-        lastInput = lastInput.substring(0, lastInput.length - 1);
-      },
-    },
-    {
-      label: "/",
-      action: () => {
-        temp = parseFloat(lastInput || "0");
-        operator = (a: number, b: number) => a / b;
-        lastInput = "";
-      },
-    },
-    {
-      label: "7",
-      action: () => {
-        lastInput = lastInput === "" ? "7" : lastInput + "7";
-      },
-    },
-    {
-      label: "8",
-      action: () => {
-        lastInput = lastInput === "" ? "8" : lastInput + "8";
-      },
-    },
-    {
-      label: "9",
-      action: () => {
-        lastInput = lastInput === "" ? "9" : lastInput + "9";
-      },
-    },
-    {
-      label: "*",
-      action: () => {
-        temp = parseFloat(lastInput || "0");
-        operator = (a: number, b: number) => a * b;
-        lastInput = "";
-      },
-    },
-    {
-      label: "4",
-      action: () => {
-        lastInput = lastInput === "" ? "4" : lastInput + "4";
-      },
-    },
-    {
-      label: "5",
-      action: () => {
-        lastInput = lastInput === "" ? "5" : lastInput + "5";
-      },
-    },
-    {
-      label: "6",
-      action: () => {
-        lastInput = lastInput === "" ? "6" : lastInput + "6";
-      },
-    },
-    {
-      label: "-",
-      action: () => {
-        temp = parseFloat(lastInput || "0");
-        operator = (a: number, b: number) => a - b;
-        lastInput = "";
-      },
-    },
+  function ac() {
+    lastInput = "";
+    temp = 0;
+    operator = (a: number, b: number) => 0;
+  }
 
-    {
-      label: "1",
-      action: () => {
-        lastInput = lastInput === "" ? "1" : lastInput + "1";
-      },
-    },
-    {
-      label: "2",
-      action: () => {
-        lastInput = lastInput === "" ? "2" : lastInput + "2";
-      },
-    },
-    {
-      label: "3",
-      action: () => {
-        lastInput = lastInput === "" ? "3" : lastInput + "3";
-      },
-    },
-    {
-      label: "+",
-      action: () => {
-        temp = parseFloat(lastInput || "0");
-        operator = (a: number, b: number) => a + b;
-        lastInput = "";
-      },
-    },
-    {
-      label: "0",
-      action: () => {
-        lastInput = lastInput === "" ? "0" : lastInput + "0";
-      },
-    },
-    {
-      label: ".",
-      action: () => {
-        if (!lastInput.includes(".")) {
-          if (lastInput === "") lastInput = "0.";
-          else lastInput = lastInput + ".";
-        }
-      },
-    },
-    {
-      label: "=",
-      action: () => {
-        lastInput = operator(temp, parseFloat(lastInput || "0")).toString();
-        temp = parseFloat(lastInput);
-        operator = () => parseFloat(lastInput);
-      },
-    },
-  ];
+  function clearDisplay() {
+    lastInput = "0";
+  }
+
+  function backspace() {
+    lastInput = lastInput.substring(0, lastInput.length - 1);
+  }
+
+  function setOperator(fn: (a: number, b: number) => number) {
+    temp = parseFloat(lastInput || "0");
+    operator = fn;
+    lastInput = "";
+  }
+
+  function digit(n: string) {
+    lastInput = lastInput === "" ? n : lastInput + n;
+  }
+
+  function pressDot() {
+    if (!lastInput.includes(".")) {
+      if (lastInput === "") lastInput = "0.";
+      else lastInput = lastInput + ".";
+    }
+  }
+
+  function equals() {
+    lastInput = operator(temp, parseFloat(lastInput || "0")).toString();
+    temp = parseFloat(lastInput);
+    operator = () => parseFloat(lastInput);
+  }
 </script>
 
 <main>
   <span aria-label="display">{input}</span>
   <div>
-    {#each buttons as button}
-      <button onclick={button.action}>{button.label}</button>
-    {/each}
+    <button aria-label="AC" onclick={ac}>AC</button>
+    <button aria-label="C" onclick={clearDisplay}>C</button>
+    <button aria-label="←" onclick={backspace}>←</button>
+    <button aria-label="/" onclick={() => setOperator((a, b) => a / b)}>
+      /
+    </button>
+
+    <button aria-label="7" onclick={() => digit("7")}>7</button>
+    <button aria-label="8" onclick={() => digit("8")}>8</button>
+    <button aria-label="9" onclick={() => digit("9")}>9</button>
+    <button aria-label="*" onclick={() => setOperator((a, b) => a * b)}>
+      *
+    </button>
+
+    <button aria-label="4" onclick={() => digit("4")}>4</button>
+    <button aria-label="5" onclick={() => digit("5")}>5</button>
+    <button aria-label="6" onclick={() => digit("6")}>6</button>
+    <button aria-label="-" onclick={() => setOperator((a, b) => a - b)}>
+      -
+    </button>
+
+    <button aria-label="1" onclick={() => digit("1")}>1</button>
+    <button aria-label="2" onclick={() => digit("2")}>2</button>
+    <button aria-label="3" onclick={() => digit("3")}>3</button>
+    <button aria-label="+" onclick={() => setOperator((a, b) => a + b)}>
+      +
+    </button>
+
+    <button aria-label="0" onclick={() => digit("0")}>0</button>
+    <button aria-label="." onclick={pressDot}>.</button>
+    <button aria-label="=" onclick={equals}> = </button>
   </div>
 </main>
 
