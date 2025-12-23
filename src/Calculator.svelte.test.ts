@@ -86,7 +86,15 @@ describe("Calculator basic behavior", () => {
       "=",
     ]);
     // Using toEqual with parseFloat to avoid string formatting differences
-    const got = parseFloat(getDisplay(container));
-    expect(got).toBe(0.75);
+    let got = parseFloat(getDisplay(container));
+    expect(got).toBeCloseTo(0.75);
+    // 0.5 + 0.25 = 0.75
+
+    // now without pressing 0 before pressing the dot
+    await clickSequence(container, ["AC"]);
+    await clickSequence(container, [".", "5", "+", ".", "2", "5", "="]);
+    // Using toEqual with parseFloat to avoid string formatting differences
+    got = parseFloat(getDisplay(container));
+    expect(got).toBeCloseTo(0.75);
   });
 });

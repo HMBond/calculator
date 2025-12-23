@@ -123,7 +123,7 @@
     {
       label: ".",
       action: () => {
-        if (!(lastInput || input).includes(".")) {
+        if (!lastInput.includes(".")) {
           if (lastInput === "") lastInput = "0.";
           else lastInput = lastInput + ".";
         }
